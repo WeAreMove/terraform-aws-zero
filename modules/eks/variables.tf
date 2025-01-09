@@ -33,6 +33,11 @@ variable "eks_node_groups" {
   description = "Map of maps of EKS node group config where keys are node group names. See the readme for details."
 }
 
+variable "eks_sm_node_groups" {
+  type        = any
+  description = "Map of maps of EKS self-managed node group config where keys are node group names. See the readme for details."
+}
+
 variable "iam_account_id" {
   description = "Account ID of the current IAM user"
 }

@@ -42,6 +42,48 @@ locals {
         taints = lookup(config, "taints", {})
     })
   }
+  eks_sm_node_group_config = { for n, config in var.eks_sm_node_groups :
+    n => merge(
+      (var.node_group_name_as_prefix ?
+        { name_prefix = "${var.cluster_name}-${n}" } :
+        { name = "${var.cluster_name}-${n}" }
+      ),
+      {
+        desired_size = lookup(config, "asg_min_size", 1)
+        max_size     = lookup(config, "asg_max_size", 3)
+        min_size     = lookup(config, "asg_min_size", 1)
+
+        create_launch_template     = true
+        use_custom_launch_template = true
+
+        ami_type       = lookup(config, "ami_type", "AL2_x86_64")
+        instance_type =  lookup(config, "instance_type", "t3a.large" )
+        capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
+        disk_size      = 100
+        block_device_mappings = {
+          xvda = {
+            device_name = "/dev/xvda"
+            ebs = {
+              delete_on_termination = true
+              encrypted             = true
+              volume_size           = 100
+              volume_type           = "gp3"
+            }
+          }
+        }
+        kubelet_extra_args = lookup(config, "use_large_ip_range", true) ? "--max-pods=${lookup(config, "node_ip_limit", 110)}" : ""
+
+        labels = merge(
+          { Environment = var.environment },
+          lookup(config, "additional_labels", {})
+        )
+        tags = merge(
+          { environment = var.environment },
+          lookup(config, "additional_tags", {})
+        )
+        taints = lookup(config, "taints", {})
+    })
+  }
 }
 
 module "eks" {
@@ -58,6 +100,7 @@ module "eks" {
 
   vpc_id      = var.vpc_id
   enable_irsa = true
+  bootstrap_self_managed_addons = true
 
 
   self_managed_node_group_defaults = {
@@ -82,6 +125,7 @@ module "eks" {
   }
 
   eks_managed_node_groups = local.eks_node_group_config
+  self_managed_node_groups = local.eks_sm_node_group_config
 
   # wait_for_cluster_timeout = 1800 # 30 minutes
 
