@@ -56,6 +56,7 @@ locals {
         create_launch_template     = true
         use_custom_launch_template = true
         launch_template_name       = "${n}-self-managed"
+        enable_efa_support         = true
 
         ami_type       = lookup(config, "ami_type", "AL2_x86_64")
         ami_id         = lookup(config, "ami_id", "")  # Specify ARM AMI ID
