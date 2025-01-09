@@ -59,6 +59,7 @@ locals {
         ami_type       = lookup(config, "ami_type", "AL2_x86_64")
         instance_type =  lookup(config, "instance_type", "t3a.large" )
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
+        subnet_ids     = lookup(config, "subnet_ids", [ "subnet-0e1f1be09fa927ca6" ])
         disk_size      = 100
         block_device_mappings = {
           xvda = {
