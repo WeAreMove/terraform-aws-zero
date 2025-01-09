@@ -101,7 +101,6 @@ module "eks" {
 
   vpc_id      = var.vpc_id
   enable_irsa = true
-  bootstrap_self_managed_addons = true
 
 
   self_managed_node_group_defaults = {
