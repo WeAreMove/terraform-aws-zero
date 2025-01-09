@@ -53,10 +53,12 @@ locals {
         max_size     = lookup(config, "asg_max_size", 3)
         min_size     = lookup(config, "asg_min_size", 1)
 
-        create_launch_template     = false
-        use_custom_launch_template = false
+        create_launch_template     = true
+        use_custom_launch_template = true
+        launch_template_name       = "${n}-self-managed"
 
         ami_type       = lookup(config, "ami_type", "AL2_x86_64")
+        ami_id         = lookup(config, "ami_id", "")  # Specify ARM AMI ID
         instance_type =  lookup(config, "instance_type", "t3a.large" )
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
         subnet_ids     = lookup(config, "subnet_ids", [ "subnet-0e1f1be09fa927ca6" ])
