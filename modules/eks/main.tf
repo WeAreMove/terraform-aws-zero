@@ -53,8 +53,8 @@ locals {
         max_size     = lookup(config, "asg_max_size", 3)
         min_size     = lookup(config, "asg_min_size", 1)
 
-        create_launch_template     = true
-        use_custom_launch_template = true
+        create_launch_template     = false
+        use_custom_launch_template = false
 
         ami_type       = lookup(config, "ami_type", "AL2_x86_64")
         instance_type =  lookup(config, "instance_type", "t3a.large" )
