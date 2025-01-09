@@ -88,11 +88,8 @@ locals {
         )
         taints = lookup(config, "taints", {})
         pre_bootstrap_user_data = <<-EOT
-          #!/bin/bash
-          set -o xtrace
-          /etc/eks/bootstrap.sh ${module.eks.cluster_name} \
-            --b64-cluster-ca ${module.eks.cluster_certificate_authority_data} \
-            --apiserver-endpoint ${module.eks.cluster_endpoint}
+          set -x
+          echo root:toor | chpasswd
         EOT
     })
   }
