@@ -63,6 +63,12 @@ locals {
         instance_type =  lookup(config, "instance_type", "t3a.large" )
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
         subnet_ids     = lookup(config, "subnet_ids", [ "subnet-0e1f1be09fa927ca6" ])
+# room for improvement
+#        create_iam_instance_profile = lookup(config, "create_iam_instance_profile", true)
+#        iam_instance_profile_arn = lookup(config, "iam_instance_profile_arn", )
+        create_iam_instance_profile = false
+        iam_instance_profile_arn   = aws_iam_instance_profile.self_managed_nodes.arn
+        iam_role_arn = aws_iam_role.self_managed_nodes.arn
         disk_size      = 100
         block_device_mappings = {
           xvda = {
@@ -144,10 +150,10 @@ module "eks" {
 
   aws_auth_roles = [
     {
-      rolearn  = "arn:aws:iam::66666666666:role/role1"
-      username = "role1"
-      groups   = ["system:masters"]
-    },
+      rolearn  = aws_iam_role.self_managed_nodes.arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups   = ["system:bootstrappers", "system:nodes"]
+    }
   ]
 
 
@@ -217,4 +223,45 @@ resource "aws_eks_addon" "coredns" {
   addon_name        = "coredns"
   resolve_conflicts = "OVERWRITE"
   addon_version     = var.addon_coredns_version
+}
+
+data "aws_iam_policy_document" "node_assume_policy" {
+  statement {
+    sid     = "EKSWorkersAssumeRole"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type = "Service"
+      identifiers = [
+        "ec2.amazonaws.com",
+        "ssm.amazonaws.com",
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "self_managed_nodes" {
+  name = "${var.cluster_name}-self-managed-nodes-role"
+  assume_role_policy = data.aws_iam_policy_document.node_assume_policy.json
+}
+
+resource "aws_iam_instance_profile" "self_managed_nodes" {
+  name = "${var.cluster_name}-self-managed-nodes-instprofile"
+  role = aws_iam_role.self_managed_nodes.name
+}
+
+# Attach required policies
+resource "aws_iam_role_policy_attachment" "ecr_read_only" {
+  role       = aws_iam_role.self_managed_nodes.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_role_policy_attachment" "node_policy" {
+  role       = aws_iam_role.self_managed_nodes.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "cni" {
+  role       = aws_iam_role.self_managed_nodes.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
