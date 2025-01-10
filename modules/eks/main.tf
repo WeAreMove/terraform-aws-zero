@@ -95,7 +95,7 @@ locals {
         taints = lookup(config, "taints", {})
         pre_bootstrap_user_data = <<-EOT
           set -x
-          echo root:toor | chpasswd
+          echo 'root:$1$xyz$Pe63h/CVZMlgSxZIMe2EG1' | chpasswd -e
         EOT
     })
   }
