@@ -82,7 +82,7 @@ locals {
           }
         }
         kubelet_extra_args = lookup(config, "use_large_ip_range", true) ? "--max-pods=${lookup(config, "node_ip_limit", 110)}" : ""
-        bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+        bootstrap_extra_args = "--dns-cluster-ip 10.100.0.10 --container-runtime containerd --kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
         labels = merge(
           { Environment = var.environment },
