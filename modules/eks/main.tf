@@ -17,6 +17,8 @@ locals {
         ami_type       = lookup(config, "ami_type", "AL2_x86_64")
         instance_types = lookup(config, "instance_types", [])
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
+        enable_bootstrap_user_data = lookup(config, "enable_bootstrap_user_data", false)
+        bootstrap_extra_args = lookup(config, "bootstrap_extra_args", "--kubelet-extra-args '--eviction-hard=nodefs.available<5%'")
         disk_size      = 100
         block_device_mappings = {
           xvda = {
