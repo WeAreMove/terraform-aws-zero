@@ -30,6 +30,7 @@ locals {
           }
         }
         kubelet_extra_args = lookup(config, "use_large_ip_range", true) ? "--max-pods=${lookup(config, "node_ip_limit", 110)}" : ""
+        bootstrap_extra_args = "--kubelet-extra-args '--eviction-hard=nodefs.available<5%'"
 
         labels = merge(
           { Environment = var.environment },
@@ -82,7 +83,7 @@ locals {
           }
         }
         kubelet_extra_args = lookup(config, "use_large_ip_range", true) ? "--max-pods=${lookup(config, "node_ip_limit", 110)}" : ""
-        bootstrap_extra_args = "--dns-cluster-ip 10.100.0.10 --container-runtime containerd --kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+        bootstrap_extra_args = "--dns-cluster-ip 10.100.0.10 --container-runtime containerd --kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot --eviction-hard=nodefs.available<5%'"
 
         labels = merge(
           { Environment = var.environment },
