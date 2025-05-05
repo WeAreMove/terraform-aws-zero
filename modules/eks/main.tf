@@ -19,7 +19,7 @@ locals {
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
         enable_bootstrap_user_data = lookup(config, "enable_bootstrap_user_data", false)
         bootstrap_extra_args = lookup(config, "bootstrap_extra_args", "--kubelet-extra-args '--eviction-hard=nodefs.available<5%'")
-        disk_size      = 100
+        disk_size      = lookup(config, "disk_size", 100)
         block_device_mappings = {
           xvda = {
             device_name = "/dev/xvda"
@@ -72,7 +72,7 @@ locals {
         create_iam_instance_profile = true
 #        iam_instance_profile_arn   = aws_iam_instance_profile.self_managed_nodes.arn
         iam_role_arn = aws_iam_role.self_managed_nodes.arn
-        disk_size      = 100
+        disk_size      = lookup(config, "disk_size", 100)
         block_device_mappings = {
           xvda = {
             device_name = "/dev/xvda"
