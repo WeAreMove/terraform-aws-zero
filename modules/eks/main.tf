@@ -18,7 +18,7 @@ locals {
         instance_types = lookup(config, "instance_types", [])
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
         enable_bootstrap_user_data = lookup(config, "enable_bootstrap_user_data", false)
-        bootstrap_extra_args = lookup(config, "bootstrap_extra_args", "--kubelet-extra-args '--eviction-hard=nodefs.available<5%'")
+        bootstrap_extra_args = lookup(config, "bootstrap_extra_args", "--kubelet-extra-args '--max-pods=111 --eviction-hard=nodefs.available<5%' ")
         disk_size      = lookup(config, "disk_size", 100)
         block_device_mappings = {
           xvda = {
@@ -31,8 +31,9 @@ locals {
             }
           }
         }
-        kubelet_extra_args = lookup(config, "use_large_ip_range", true) ? "--max-pods=${lookup(config, "node_ip_limit", 110)}" : ""
-        bootstrap_extra_args = "--kubelet-extra-args '--eviction-hard=nodefs.available<5%'"
+        # this is not good; need revisit
+        # kubelet_extra_args = lookup(config, "use_large_ip_range", true) ? "--max-pods=${lookup(config, "node_ip_limit", 110)}" : ""
+        # bootstrap_extra_args = "--kubelet-extra-args '--eviction-hard=nodefs.available<5%'"
 
         labels = merge(
           { Environment = var.environment },
@@ -85,7 +86,7 @@ locals {
           }
         }
         kubelet_extra_args = lookup(config, "use_large_ip_range", true) ? "--max-pods=${lookup(config, "node_ip_limit", 110)}" : ""
-        bootstrap_extra_args = "--dns-cluster-ip 10.100.0.10 --container-runtime containerd --kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot --eviction-hard=nodefs.available<5%'"
+        bootstrap_extra_args = "--dns-cluster-ip 10.100.0.10 --container-runtime containerd --kubelet-extra-args '--max-pods=111 --node-labels=node.kubernetes.io/lifecycle=spot --eviction-hard=nodefs.available<5%' "
 
         labels = merge(
           { Environment = var.environment },
