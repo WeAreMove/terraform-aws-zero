@@ -14,6 +14,7 @@ locals {
         create_launch_template     = true # lookup(config, "use_large_ip_range", true)
         use_custom_launch_template = true
 
+        ami_id         = lookup(config, "ami_id", "")  # Specify ARM AMI ID
         ami_type       = lookup(config, "ami_type", "AL2_x86_64")
         instance_types = lookup(config, "instance_types", [])
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
