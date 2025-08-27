@@ -26,7 +26,7 @@ locals {
             ebs = {
               delete_on_termination = true
               encrypted             = true
-              volume_size           = 100
+              volume_size           = lookup(config, "disk_size", 48)
               volume_type           = "gp3"
             }
           }
@@ -80,7 +80,7 @@ locals {
             ebs = {
               delete_on_termination = true
               encrypted             = true
-              volume_size           = 100
+              volume_size           = lookup(config, "disk_size", 48)
               volume_type           = "gp3"
             }
           }
