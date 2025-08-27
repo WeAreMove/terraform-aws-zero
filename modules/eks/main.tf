@@ -73,7 +73,7 @@ locals {
         create_iam_instance_profile = true
 #        iam_instance_profile_arn   = aws_iam_instance_profile.self_managed_nodes.arn
         iam_role_arn = aws_iam_role.self_managed_nodes.arn
-        disk_size      = lookup(config, "disk_size", 100)
+        disk_size      = lookup(config, "disk_size", 48)
         block_device_mappings = {
           xvda = {
             device_name = "/dev/xvda"
@@ -127,7 +127,7 @@ module "eks" {
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
-    disk_size = 100
+    disk_size      = lookup(config, "disk_size", 48)
 
 
     # block_device_mappings = {
