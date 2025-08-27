@@ -127,7 +127,7 @@ module "eks" {
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
-    disk_size      = lookup(config, "disk_size", 48)
+    disk_size = 48
 
 
     # block_device_mappings = {
