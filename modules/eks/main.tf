@@ -71,7 +71,7 @@ locals {
 # room for improvement
 #        create_iam_instance_profile = lookup(config, "create_iam_instance_profile", true)
         iam_instance_profile_arn = lookup(config, "iam_instance_profile_arn", "")
-#        create_iam_instance_profile = true
+        create_iam_instance_profile = false
 #        iam_instance_profile_arn   = aws_iam_instance_profile.self_managed_nodes.arn
         iam_role_arn = aws_iam_role.self_managed_nodes.arn
         disk_size      = lookup(config, "disk_size", 48)
