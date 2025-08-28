@@ -69,9 +69,8 @@ locals {
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
         subnet_ids     = lookup(config, "subnet_ids", [ "subnet-0e1f1be09fa927ca6" ])
 # room for improvement
-#        create_iam_instance_profile = lookup(config, "create_iam_instance_profile", true)
-        iam_instance_profile_arn = lookup(config, "iam_instance_profile_arn", "")
-        create_iam_instance_profile = false
+        create_iam_instance_profile = (lookup(config, "iam_instance_profile_arn", null) == null) ? true : false
+        iam_instance_profile_arn = lookup(config, "iam_instance_profile_arn", "this-can-not-be-empty")
 #        iam_instance_profile_arn   = aws_iam_instance_profile.self_managed_nodes.arn
         iam_role_arn = aws_iam_role.self_managed_nodes.arn
         disk_size      = lookup(config, "disk_size", 48)
