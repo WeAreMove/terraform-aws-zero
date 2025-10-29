@@ -60,7 +60,8 @@ locals {
 
         create_launch_template     = true
         use_custom_launch_template = true
-        launch_template_name       = "${n}-self-managed"
+        launch_template_name       = lookup(config,"launch_template_name","${n}-self-managed")
+        launch_template_use_name_prefix = lookup(config,"launch_template_use_name_prefix",true)
         enable_efa_support         = true
 
         ami_type       = lookup(config, "ami_type", "AL2_x86_64")
@@ -68,10 +69,15 @@ locals {
         instance_type =  lookup(config, "instance_type", "t3a.large" )
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
         subnet_ids     = lookup(config, "subnet_ids", [ "subnet-0e1f1be09fa927ca6" ])
+        use_name_prefix = lookup(config,"use_name_prefix",true)
 # room for improvement
         create_iam_instance_profile = (lookup(config, "iam_instance_profile_arn", null) == null) ? true : false
         iam_instance_profile_arn = lookup(config, "iam_instance_profile_arn", "this-can-not-be-empty")
 #        iam_instance_profile_arn   = aws_iam_instance_profile.self_managed_nodes.arn
+        use_mixed_instances_policy = (lookup(config, "mixed_instances_policy", null) == null) ? false : true
+        mixed_instances_policy = lookup(config, "mixed_instances_policy",{})
+#        this below is ignored for whatever reason.
+#        suspended_processes = lookup(config,"suspended_processes",[])
         iam_role_arn = aws_iam_role.self_managed_nodes.arn
         disk_size      = lookup(config, "disk_size", 48)
         block_device_mappings = {
