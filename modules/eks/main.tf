@@ -76,8 +76,7 @@ locals {
 #        iam_instance_profile_arn   = aws_iam_instance_profile.self_managed_nodes.arn
         use_mixed_instances_policy = (lookup(config, "mixed_instances_policy", null) == null) ? false : true
         mixed_instances_policy = lookup(config, "mixed_instances_policy",{})
-#        this below is ignored for whatever reason.
-#        suspended_processes = lookup(config,"suspended_processes",[])
+        suspended_processes = lookup(config,"suspended_processes",[])
         iam_role_arn = aws_iam_role.self_managed_nodes.arn
         disk_size      = lookup(config, "disk_size", 48)
         block_device_mappings = {
