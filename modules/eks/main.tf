@@ -77,6 +77,7 @@ locals {
         # wins. Override per group via "ami_lookup_version" if 1.32 AL2 AMIs ever get deregistered.
         cluster_version = lookup(config, "ami_lookup_version", "1.32")
         instance_type =  lookup(config, "instance_type", "t3a.large" )
+        key_name       = lookup(config, "key_name", null)  # EC2 key pair for SSH access to the nodes
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
         subnet_ids     = lookup(config, "subnet_ids", [ "subnet-0e1f1be09fa927ca6" ])
         use_name_prefix = lookup(config,"use_name_prefix",true)
