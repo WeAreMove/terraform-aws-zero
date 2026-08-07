@@ -69,6 +69,13 @@ locals {
 
         ami_type       = lookup(config, "ami_type", "AL2_x86_64")
         ami_id         = lookup(config, "ami_id", "")  # Specify ARM AMI ID
+        # The upstream self-managed submodule unconditionally reads data.aws_ami.eks_default,
+        # querying "amazon-eks-node-<cluster_version>-v*" (AL2). AWS stopped publishing AL2 EKS AMIs
+        # after 1.32, so at cluster_version >= 1.33 that lookup errors with "query returned no results"
+        # even though we always supply ami_id (coalesce(ami_id, eks_default) still forces the read).
+        # Pin the lookup to the last AL2 release so it resolves; the result is discarded because ami_id
+        # wins. Override per group via "ami_lookup_version" if 1.32 AL2 AMIs ever get deregistered.
+        cluster_version = lookup(config, "ami_lookup_version", "1.32")
         instance_type =  lookup(config, "instance_type", "t3a.large" )
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
         subnet_ids     = lookup(config, "subnet_ids", [ "subnet-0e1f1be09fa927ca6" ])
