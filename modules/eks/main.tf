@@ -23,7 +23,10 @@ locals {
         disk_size      = lookup(config, "disk_size", 48)
         block_device_mappings = {
           xvda = {
-            device_name = "/dev/xvda"
+            # Root device name differs by AMI family: AL2/AL2023 use /dev/xvda, Ubuntu uses /dev/sda1.
+            # Must match the AMI's actual root device or disk_size/encryption won't apply to root and an
+            # unused extra volume gets attached. Defaults to /dev/xvda so existing AL2 groups are unchanged.
+            device_name = lookup(config, "root_device_name", "/dev/xvda")
             ebs = {
               delete_on_termination = true
               encrypted             = true
@@ -81,7 +84,10 @@ locals {
         disk_size      = lookup(config, "disk_size", 48)
         block_device_mappings = {
           xvda = {
-            device_name = "/dev/xvda"
+            # Root device name differs by AMI family: AL2/AL2023 use /dev/xvda, Ubuntu uses /dev/sda1.
+            # Must match the AMI's actual root device or disk_size/encryption won't apply to root and an
+            # unused extra volume gets attached. Defaults to /dev/xvda so existing AL2 groups are unchanged.
+            device_name = lookup(config, "root_device_name", "/dev/xvda")
             ebs = {
               delete_on_termination = true
               encrypted             = true
