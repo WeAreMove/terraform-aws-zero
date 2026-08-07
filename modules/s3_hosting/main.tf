@@ -135,17 +135,18 @@ resource "aws_cloudfront_distribution" "client_assets_distribution" {
     compress               = true
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
+    #min_ttl                = 0
+    #default_ttl            = 86400
+    #max_ttl                = 31536000
+    cache_policy_id        = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
     trusted_signers        = var.cf_signed_downloads ? var.cf_trusted_signers : null
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
+    #forwarded_values {
+    #  query_string = false
+    #  cookies {
+    #    forward = "none"
+    #  }
+    #}
 
     dynamic "lambda_function_association" {
       for_each = var.cf_lambda_function_associations
