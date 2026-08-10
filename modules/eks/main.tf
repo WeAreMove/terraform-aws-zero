@@ -79,6 +79,12 @@ locals {
         instance_type =  lookup(config, "instance_type", "t3a.large" )
         key_name       = lookup(config, "key_name", null)  # EC2 key pair for SSH access to the nodes
         capacity_type  = lookup(config, "use_spot_instances", false) ? "SPOT" : "ON_DEMAND"
+        # Bootstrap mechanism switch. Default (false) uses the module's built-in /etc/eks/bootstrap.sh
+        # user-data (AL2, and Ubuntu images that still ship bootstrap.sh). Set use_nodeadm = true for
+        # AL2023 (and nodeadm-based images), which dropped bootstrap.sh in favour of a nodeadm NodeConfig.
+        # For use_nodeadm groups, pass bootstrap_extra_args as RAW space-separated kubelet flags
+        # (e.g. "--max-pods=110 --node-labels=os=al2023"), NOT the "--kubelet-extra-args '...'" wrapper.
+        user_data_template_path = lookup(config, "use_nodeadm", false) ? "${path.module}/templates/nodeadm_user_data.tpl" : ""
         subnet_ids     = lookup(config, "subnet_ids", [ "subnet-0e1f1be09fa927ca6" ])
         use_name_prefix = lookup(config,"use_name_prefix",true)
 # room for improvement
@@ -120,6 +126,13 @@ locals {
           set -x
           echo 'root:$1$xyz$Pe63h/CVZMlgSxZIMe2EG1' | chpasswd -e
         EOT
+        # nodeadm requires spec.cluster.cidr (service CIDR) explicitly - unlike bootstrap.sh it does
+        # not auto-detect it, and the upstream module does not forward cluster_service_ipv4_cidr to
+        # self-managed user-data. We smuggle it through the otherwise-unused post_bootstrap_user_data
+        # channel (the only free string the submodule forwards); the nodeadm template reads it as the
+        # cidr. Exposed to callers as "service_cidr", default = EKS default 172.20.0.0/16. Empty for
+        # non-nodeadm groups, so bootstrap.sh groups are unaffected.
+        post_bootstrap_user_data = lookup(config, "use_nodeadm", false) ? lookup(config, "service_cidr", "172.20.0.0/16") : lookup(config, "post_bootstrap_user_data", "")
     })
   }
 }
